@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# git clone easier from github.
+# only supports github for now.
+# probably won't add support for other hosts.
+
+proper_usage() {
+	echo "Exited with status: $?"
+	echo "-------------------------------------"
+	echo "Usage:"
+	echo "	$0 user repo	# Two arguments"
+	echo "or"
+	echo "	$0 user/repo	# Single argument"
+	echo "-------------------------------------"
+	exit 1
+}
+
+gitclone() {
+	pushd $HOME/Library/Developer/git > /dev/null
+	git clone "$url/$repodir.git"
+	popd > /dev/null
+}
+
+url="https://github.com"
+
+# If two arguments passed, first is the username, second the repo name.
+# If only a single argument, it must contain the username and repo name
+# 	joined by a forward slash.
+# If neither of these are met, it exits after showing the usage info.
+if [[ ( $# -eq 2 && ! "$*" == *\/* ) ]]; then
+	user="$1"
+	repo="$2"
+	repodir="$1/$2"
+elif [[ ( $# -eq 1 && "$1" == *\/* ) ]]; then
+	repodir="$1"
+else
+	proper_usage
+fi
+
+if [ $? -eq 0 ]; then
+	gitclone && echo $0
+fi
